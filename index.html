@@ -13,8 +13,12 @@
         body {
             font-family: 'Inter', sans-serif;
             background-color: #0d0d0d;
-            cursor: none; /* Hide default cursor */
             overflow-x: hidden;
+        }
+
+        /* Hide cursor only in hero section */
+        #home {
+            cursor: none;
         }
 
         .scroll-to-top {
@@ -93,6 +97,7 @@
         }
     </style>
 </head>
+
 <body class="bg-gray-950 text-white leading-relaxed">
 
     <!-- Header and Navigation -->
@@ -115,7 +120,7 @@
                 Welcome to LAZY GALAXY
             </h2>
             <p class="text-xl md:text-2xl text-gray-400 max-w-2xl mx-auto animate-in fade-in-up duration-1000 delay-300">
-                Crafting worlds, building games, and exploring the cosmos one pixel at a time.
+                Crafting worlds, building games, and exploring the cosmos.
             </p>
         </div>
     </section>
@@ -128,12 +133,13 @@
             <div class="text-center mb-12">
                 <h3 class="text-4xl font-bold text-cyan-400 mb-4">About Lazy Galaxy</h3>
                 <p class="text-lg text-gray-300 max-w-3xl mx-auto">
-                    A brief introduction to our company, our philosophy, and our journey in the world of game development.
+                    A Studio Aiming to Create the World’s Best Game.
                 </p>
             </div>
             <div class="bg-gray-800 p-8 rounded-2xl shadow-lg">
                 <p class="text-gray-300 leading-loose">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                    We believe great games are built with passion, creativity, and purpose. Our mission is simple — to craft a game that stands above the rest, one that players will remember for years. 
+                    Our approach to game development is simple: build experiences that feel good to play and look even better. We value gameplay depth, clean design, and moments that leave players smiling.
                 </p>
             </div>
         </section>
@@ -144,36 +150,102 @@
                 <h3 class="text-4xl font-bold text-cyan-400 mb-4">Our Portfolio</h3>
                 <p class="text-lg text-gray-300">Explore the games we've brought to life across various platforms.</p>
             </div>
-            <div id="portfolio-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Game cards will be dynamically inserted here -->
-            </div>
+        </div>
+        <div id="portfolio-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Game cards will be dynamically inserted here -->
+        </div>
+        <div class="text-center mt-10">
+            <a 
+                href="https://play.google.com/store/apps/developer?id=krg" 
+                target="_blank" 
+                class="text-cyan-400 text-lg font-semibold hover:text-cyan-300 transition duration-300 underline decoration-cyan-500 hover:decoration-cyan-300"
+            >
+                All Games →
+            </a>
         </section>
 
         <!-- Contact Section -->
-        <section id="contact" class="py-16 fade-in-up-on-scroll">
-            <div class="text-center mb-12">
-                <h3 class="text-4xl font-bold text-cyan-400 mb-4">Get in Touch</h3>
-                <p class="text-lg text-gray-300">Have a project in mind or just want to say hello? Send us a message!</p>
-            </div>
-            <div class="bg-gray-800 p-8 rounded-2xl shadow-lg max-w-xl mx-auto">
-                <form id="contact-form" class="space-y-6">
-                    <div>
-                        <label for="name" class="block text-gray-300 font-semibold mb-2">Your Name</label>
-                        <input type="text" id="name" name="name" class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-cyan-400 contact-input">
-                    </div>
-                    <div>
-                        <label for="email" class="block text-gray-300 font-semibold mb-2">Your Email</label>
-                        <input type="email" id="email" name="email" required class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-cyan-400 contact-input">
-                    </div>
-                    <div>
-                        <label for="message" class="block text-gray-300 font-semibold mb-2">Message</label>
-                        <textarea id="message" name="message" rows="5" required class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-cyan-400 contact-input"></textarea>
-                    </div>
-                    <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-3 rounded-lg transition duration-300 shadow-lg">Send Message</button>
-                    <div id="form-message" class="text-center text-sm font-semibold mt-4 hidden"></div>
-                </form>
-            </div>
-        </section>
+        <!-- Contact Section -->
+<section id="contact" class="py-24 bg-gray-950 text-white">
+  <div class="max-w-5xl mx-auto text-center px-6">
+    <h2 class="text-5xl font-extrabold text-cyan-400 mb-4 drop-shadow-[0_0_10px_rgba(34,211,238,0.4)]">
+      Get in Touch
+    </h2>
+    <p class="text-gray-400 text-lg max-w-2xl mx-auto mb-12">
+      Have a question, an idea, or just want to say hi?  
+      We’d love to hear from you — your message goes straight to our dev team.
+    </p>
+
+    <!-- Contact Form -->
+    <form id="contact-form" class="bg-white/5 backdrop-blur-md border border-cyan-500/20 hover:border-cyan-400/40 shadow-[0_0_20px_rgba(0,255,255,0.05)] rounded-2xl p-8 md:p-10 max-w-2xl mx-auto transition duration-300 space-y-6">
+      <div class="text-left">
+        <label for="name" class="block mb-2 text-sm font-semibold text-cyan-300 tracking-wide">Name</label>
+        <input type="text" id="name" name="name" required
+          class="w-full p-3 rounded-lg bg-gray-900/80 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-400 placeholder-gray-500"
+          placeholder="Enter your name" />
+      </div>
+
+      <div class="text-left">
+        <label for="email" class="block mb-2 text-sm font-semibold text-cyan-300 tracking-wide">Email</label>
+        <input type="email" id="email" name="email" required
+          class="w-full p-3 rounded-lg bg-gray-900/80 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-400 placeholder-gray-500"
+          placeholder="you@example.com" />
+      </div>
+
+      <div class="text-left">
+        <label for="message" class="block mb-2 text-sm font-semibold text-cyan-300 tracking-wide">Message</label>
+        <textarea id="message" name="message" rows="5" required
+          class="w-full p-3 rounded-lg bg-gray-900/80 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-400 placeholder-gray-500"
+          placeholder="Type your message here..."></textarea>
+      </div>
+
+      <button type="submit"
+        class="w-full py-3 px-6 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-lg shadow-[0_0_15px_rgba(0,255,255,0.4)] hover:shadow-[0_0_25px_rgba(0,255,255,0.6)] transition duration-300">
+        Send Message 🚀
+      </button>
+
+      <p id="form-message" class="hidden mt-4 text-sm"></p>
+    </form>
+  </div>
+</section>
+
+
+
+        <!-- ✅ EmailJS Integration (place this BEFORE </body>) -->
+        <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+        <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize EmailJS with your Public Key
+            emailjs.init("tqj2kJS_GnTWZuSxc");
+
+            const contactForm = document.getElementById('contact-form');
+            const formMessage = document.getElementById('form-message');
+
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                formMessage.classList.remove('text-green-500', 'text-red-500', 'hidden');
+                formMessage.textContent = 'Sending...';
+
+                emailjs.send("service_l4tpgek", "template_i7e727b", {
+                    name: document.getElementById('name').value,
+                    email: document.getElementById('email').value,
+                    message: document.getElementById('message').value
+                })
+                .then(() => {
+                    formMessage.textContent = '✅ Message sent successfully!';
+                    formMessage.classList.add('text-green-500');
+                    contactForm.reset();
+                })
+                .catch((error) => {
+                    console.error('EmailJS error:', error);
+                    formMessage.textContent = '❌ Failed to send message. Please try again later.';
+                    formMessage.classList.add('text-red-500');
+                });
+            });
+        });
+        </script>
+
 
     </main>
 
@@ -262,54 +334,140 @@
             animate();
 
             // Mouse trail effect
-            document.addEventListener('mousemove', (e) => {
-                const trailDot = document.createElement('div');
-                trailDot.className = 'trail-dot';
-                trailDot.style.left = `${e.clientX}px`;
-                trailDot.style.top = `${e.clientY}px`;
-                document.body.appendChild(trailDot);
+            const heroSection = document.getElementById('home');
+                heroSection.addEventListener('mousemove', (e) => {
+                    const rect = heroSection.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
 
-                setTimeout(() => {
-                    trailDot.remove();
-                }, 500);
-            });
+                    const trailDot = document.createElement('div');
+                    trailDot.className = 'trail-dot';
+                    trailDot.style.left = `${x + rect.left}px`;
+                    trailDot.style.top = `${y + rect.top}px`;
+                    document.body.appendChild(trailDot);
+
+                    setTimeout(() => {
+                        trailDot.remove();
+                    }, 500);
+                });
 
             // Portfolio Data - Add or remove games here
-            const games = [
+           const games = [
                 {
-                    name: "Cosmic Odyssey",
-                    image: "https://placehold.co/600x400/38a169/ffffff?text=Cosmic+Odyssey",
+                    name: "Pirate Hunter",
+                    image: "piratehunter.png",
                     platforms: [
-                        { name: "Google Play", url: "https://play.google.com" },
-                        { name: "iOS", url: "https://www.apple.com/app-store/" }
+                        { name: "Google Play", url: "https://play.google.com/store/apps/details?id=com.krg.piratehunter" },
+                        { name: "IOS", url: "https://apps.apple.com/us/app/pirate-hunter/id6748638908" }
                     ]
                 },
                 {
-                    name: "Galactic Runner",
-                    image: "https://placehold.co/600x400/9b2c2c/ffffff?text=Galactic+Runner",
+                    name: "Bounce Away",
+                    image: "bounceaway.png",
                     platforms: [
-                        { name: "Google Play", url: "https://play.google.com" },
-                        { name: "Steam", url: "https://store.steampowered.com/" }
+                        { name: "Google Play", url: "https://play.google.com/store/apps/details?id=com.lazygalaxy.bounceaway" },
                     ]
                 },
                 {
-                    name: "Astro Blitz",
-                    image: "https://placehold.co/600x400/3182ce/ffffff?text=Astro+Blitz",
+                    name: "Fortune Rock",
+                    image: "fortunerock.png",
                     platforms: [
-                        { name: "iOS", url: "https://www.apple.com/app-store/" },
-                        { name: "Steam", url: "https://store.steampowered.com/" }
+                        { name: "Google Play", url: "https://play.google.com/store/apps/details?id=com.lazygalaxy.fortunerock" },
                     ]
                 },
                 {
-                    name: "Nebula Defender",
-                    image: "https://placehold.co/600x400/6b46c1/ffffff?text=Nebula+Defender",
+                    name: "Idle Solar Defence",
+                    image: "idlesolardefence.png",
                     platforms: [
-                        { name: "Google Play", url: "https://play.google.com" },
-                        { name: "iOS", url: "https://www.apple.com/app-store/" },
-                        { name: "Steam", url: "https://store.steampowered.com/" }
+                        { name: "Google Play", url: "https://play.google.com/store/apps/details?id=com.krg.idlesolardefence" },
+                    ]
+                },
+                {
+                    name: "Chicken Cartel",
+                    image: "chickencartel.png",
+                    platforms: [
+                        { name: "Google Play", url: "https://play.google.com/store/apps/details?id=com.krg.chickencartel" },
+                    ]
+                },
+                {
+                    name: "Balance Cart",
+                    image: "balancecart.png",
+                    platforms: [
+                        { name: "Google Play", url: "https://play.google.com/store/apps/details?id=com.lazygalaxy.balancecart" },
+                    ]
+                },
+                {
+                    name: "Snake Hole",
+                    image: "snakehole.png",
+                    platforms: [
+                        { name: "Google Play", url: "https://play.google.com/store/apps/details?id=com.krg.snakehole" },
+                    ]
+                },
+                {
+                    name: "Elemental Fusion",
+                    image: "elementalfusion.png",
+                    platforms: [
+                        { name: "Google Play", url: "https://play.google.com/store/apps/details?id=com.krg.ElementalFusion" },
+                    ]
+                },
+                {
+                    name: "Diceful",
+                    image: "diceful.png",
+                    platforms: [
+                        { name: "Google Play", url: "https://play.google.com/store/apps/details?id=com.krg.diceful" },
+                    ]
+                },
+                {
+                    name: "AR Bowling",
+                    image: "arbowling.png",
+                    platforms: [
+                        { name: "Google Play", url: "https://play.google.com/store/apps/details?id=com.krg.ARBowling" },
+                    ]
+                },
+                {
+                    name: "Blast And Find",
+                    image: "blastandfind.png",
+                    platforms: [
+                        { name: "Google Play", url: "https://play.google.com/store/apps/details?id=com.krg.blastandfind" },
+                    ]
+                },
+                {
+                    name: "Idle Shores",
+                    image: "idleshores.png",
+                    platforms: [
+                        { name: "Google Play", url: "https://play.google.com/store/apps/details?id=com.krg.isleofarrows" },
+                    ]
+                },
+                {
+                    name: "Rinku",
+                    image: "rinku.png",
+                    platforms: [
+                        { name: "Google Play", url: "https://play.google.com/store/apps/details?id=com.krg.Rinku" },
+                    ]
+                },
+                {
+                    name: "Bounce It",
+                    image: "bounceit.png",
+                    platforms: [
+                        { name: "Google Play", url: "https://play.google.com/store/apps/details?id=com.krg.BounceIt" },
+                    ]
+                },
+                {
+                    name: "Build A Family",
+                    image: "buildafamily.png",
+                    platforms: [
+                        { name: "Google Play", url: "https://play.google.com/store/apps/details?id=com.krg.buildafamily" },
+                    ]
+                },
+                {
+                    name: "Planet Miner",
+                    image: "planetminer.png",
+                    platforms: [
+                        { name: "Google Play", url: "https://play.google.com/store/apps/details?id=com.krg.planetminer" },
                     ]
                 }
             ];
+
 
             const portfolioContainer = document.getElementById('portfolio-container');
 
@@ -319,20 +477,31 @@
                 gameCard.className = 'portfolio-item relative rounded-xl overflow-hidden shadow-xl group transition-transform duration-300 hover:scale-105';
 
                 gameCard.innerHTML = `
-                    <img src="${game.image}" alt="${game.name}" class="w-full h-auto object-cover transition-opacity duration-300 group-hover:opacity-75">
-                    <div class="overlay absolute inset-0 bg-black/70 flex flex-col items-center justify-center p-4 transition-opacity duration-300 opacity-0">
-                        <h4 class="text-2xl font-bold mb-4 text-center">${game.name}</h4>
-                        <div class="flex space-x-3">
-                            ${game.platforms.map(platform => `
-                                <a href="${platform.url}" target="_blank" class="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-2 px-4 rounded-lg text-sm transition duration-300">
-                                    ${platform.name}
-                                </a>
-                            `).join('')}
+                    <div class="relative group overflow-hidden rounded-xl shadow-xl">
+                        <!-- Game Image -->
+                        <img src="${game.image}" alt="${game.name}" class="w-full h-64 object-cover">
+
+                        <!-- Overlay for hover -->
+                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col justify-center items-center">
+                            <div class="flex space-x-3">
+                                ${game.platforms.map(platform => `
+                                    <a href="${platform.url}" target="_blank" class="bg-cyan-500 text-white px-3 py-1 rounded-md font-semibold hover:bg-cyan-600 transition">
+                                        ${platform.name}
+                                    </a>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <!-- Game Name Label (always visible on top) -->
+                        <div class="absolute top-0 left-0 right-0 bg-black/60 text-center py-2">
+                            <h4 class="text-lg font-semibold text-cyan-400 tracking-wide">${game.name}</h4>
                         </div>
                     </div>
                 `;
+
                 portfolioContainer.appendChild(gameCard);
             });
+
 
             // Smooth scrolling for navigation
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -344,33 +513,6 @@
                 });
             });
 
-            // Contact Form Submission
-            const contactForm = document.getElementById('contact-form');
-            const formMessage = document.getElementById('form-message');
-
-            contactForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                
-                const name = document.getElementById('name').value;
-                const email = document.getElementById('email').value;
-                const message = document.getElementById('message').value;
-
-                if (name && email && message) {
-                    const mailtoLink = `mailto:your-email@example.com?subject=Message from Lazy Galaxy Website&body=Name: ${encodeURIComponent(name)}%0AEmail: ${encodeURIComponent(email)}%0A%0AMessage:%0A${encodeURIComponent(message)}`;
-                    window.location.href = mailtoLink;
-                    
-                    formMessage.textContent = 'Thank you for your message! We will get back to you shortly.';
-                    formMessage.classList.remove('text-red-500', 'hidden');
-                    formMessage.classList.add('text-green-500');
-                    contactForm.reset();
-                } else {
-                    formMessage.textContent = 'Please fill out all fields.';
-                    formMessage.classList.remove('text-green-500', 'hidden');
-                    formMessage.classList.add('text-red-500');
-                }
-                
-                formMessage.classList.remove('hidden');
-            });
 
             // Scroll to Top Button functionality
             const scrollToTopBtn = document.getElementById('scrollToTopBtn');
