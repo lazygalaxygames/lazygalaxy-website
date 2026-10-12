@@ -59,6 +59,26 @@
   buildRiver();
   let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(buildRiver, 150); });
 
+  /* ---------- studio picks ---------- */
+  (function () {
+    const ids = window.LG_PICKS || [];
+    const picks = ids.map((k) => GAMES.find((g) => g.slug === k)).filter(Boolean);
+    const sec = $('#picks'), list = $('#picks-list');
+    if (!sec || !picks.length) return;
+    sec.hidden = false;
+    list.style.setProperty('--n', Math.min(picks.length, 5));
+    const showDl = (d) => /[KMB]\+?$/i.test(d || '');          // only 1K+ and up
+    list.innerHTML = picks.map((g) => {
+      const stats = [showDl(g.downloads) ? `${esc(g.downloads)} downloads` : '', g.rating ? `<span class="star">★</span> ${esc(g.rating)}` : '']
+        .filter(Boolean).join(' · ') || esc(g.genre);
+      return `<li class="pick"><a href="${esc(playUrl(g))}" target="_blank" rel="noopener" aria-label="${esc(g.name)} on Google Play">
+        <div class="pick-shot"><img src="${esc(shotSrc(g))}" alt="${esc(g.name)} screenshot" loading="lazy" width="540" height="960"></div>
+        <div class="pick-info"><img src="${esc(iconSrc(g))}" alt="" loading="lazy" width="44" height="44">
+          <span class="pick-text"><span class="pick-name">${esc(g.name)}</span><span class="pick-stats">${stats}</span></span></div>
+      </a></li>`;
+    }).join('');
+  })();
+
   /* ---------- hero orbit of game icons ---------- */
   const orbit = $('#orbit');
   if (orbit && GAMES.length) {

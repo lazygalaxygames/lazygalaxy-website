@@ -204,6 +204,41 @@ html.has-cursor input, html.has-cursor textarea { cursor: text !important; }
   background: radial-gradient(70% 50% at 50% 40%, color-mix(in srgb, var(--accent) 22%, transparent), transparent), var(--bg-2);
   font: 700 22px/1.2 var(--display); letter-spacing: -.02em; color: var(--muted); }
 
+/* ---------- studio picks (cards) ---------- */
+.picks { padding: 60px 0 100px; }
+.picks-head { margin-bottom: 40px; }
+.picks-list {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(var(--n, 5), minmax(0, 1fr)); gap: 24px;
+}
+.pick a { display: block; text-decoration: none; color: var(--ink); }
+.pick-shot {
+  aspect-ratio: 9 / 16; border-radius: 22px; overflow: hidden; background: var(--bg-2);
+  box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 30px 60px -30px rgba(0,0,0,.9);
+  transition: transform .45s cubic-bezier(.2,.7,.2,1), box-shadow .45s;
+}
+.pick-shot img { width: 100%; height: 100%; object-fit: cover; transition: transform .8s cubic-bezier(.2,.7,.2,1); }
+@media (hover: hover) {
+  .pick a:hover .pick-shot { transform: translateY(-6px); box-shadow: 0 0 0 1px rgba(255,255,255,.22), 0 40px 70px -30px rgba(0,0,0,.95); }
+  .pick a:hover .pick-shot img { transform: scale(1.04); }
+}
+.pick a:focus-visible .pick-shot { transform: translateY(-6px); }
+.pick-info { display: flex; align-items: center; gap: 12px; margin-top: 16px; }
+.pick-info img { width: 44px; height: 44px; border-radius: 12px; flex: none; box-shadow: 0 0 0 1px rgba(255,255,255,.08); }
+.pick-text { min-width: 0; }
+.pick-name { display: block; font: 600 16px/1.2 var(--display); letter-spacing: -.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pick-stats { display: block; margin-top: 4px; font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pick-stats .star { color: #f5c451; }
+@media (max-width: 1000px) {
+  .picks-list {
+    display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory;
+    margin: 0 -20px; padding: 0 20px 8px; scroll-padding-inline: 20px; scrollbar-width: none;
+  }
+  .picks-list::-webkit-scrollbar { display: none; }
+  .pick { flex: 0 0 clamp(190px, 58vw, 250px); min-width: 0; scroll-snap-align: start; }
+}
+@media (max-width: 640px) { .picks-list { margin: 0 -16px; padding: 0 16px 8px; scroll-padding-inline: 16px; } .pick-name { font-size: 15px; } }
+
 /* ---------- games river ---------- */
 .games { padding: 80px 0 100px; }
 .section-head { margin-bottom: 50px; }
