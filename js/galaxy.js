@@ -124,7 +124,7 @@
   window.addEventListener('pointerdown', (e) => {
     if (e.button !== 0) return;
     mouse.downAt = performance.now(); mouse.downX = e.clientX; mouse.downY = e.clientY;
-    if (e.pointerType !== 'mouse' || isInteractive(e.target)) return;
+    if (e.pointerType !== 'mouse' || isInteractive(e.target) || gameClaimed()) return;
     mouse.down = true;
     clearTimeout(holdTimer);
     holdTimer = setTimeout(() => {
@@ -145,7 +145,7 @@
       hole.active = false;
       document.body.style.userSelect = '';
       cursorEl && cursorEl.classList.remove('is-hold');
-    } else if (quick && e.button === 0 && !isInteractive(e.target)) {
+    } else if (quick && e.button === 0 && !isInteractive(e.target) && !gameClaimed()) {
       supernova(e.clientX, e.clientY, e.pointerType === 'mouse' ? 0.7 : 0.9);
     }
     mouse.down = false;
@@ -157,7 +157,10 @@
   });
   window.addEventListener('blur', () => { if (hole.active) release({ clientX: mouse.x, clientY: mouse.y, button: 0, pointerType: 'mouse', target: document.body }); });
 
+  function gameClaimed() { return window.LG_GAME_CLAIM && performance.now() - window.LG_GAME_CLAIM < 600; }
+
   function supernova(x, y, power) {
+    if (window.LG_onNova) { try { window.LG_onNova(x, y, power); } catch (err) {} }
     waves.push({ x, y, r: 0, speed: 700 + power * 260, power, life: 1 });
     const count = Math.min(320, Math.round(26 + power * 34));
     for (let i = 0; i < count; i++) {
@@ -187,6 +190,7 @@
   }
   window.LG_HYPERDRIVE = engageHyperdrive;
   window.LG_SUPERNOVA = supernova;
+  window.LG_GALAXY = { hole, mouse };
 
   if (finePointer && cursorEl) root.classList.add('has-cursor');
 
