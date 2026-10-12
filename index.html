@@ -60,44 +60,21 @@
       <a href="#featured" class="scroll-cue" aria-label="Scroll down"><span></span></a>
     </section>
 
-    <!-- ============ FEATURED (driven by /featured/feature.txt) ============ -->
+    <!-- ============ FEATURED (driven by /featured/feature.js) ============ -->
     <section class="featured" id="featured" hidden>
-      <div class="wrap">
-        <div class="feat-card reveal" id="feat-card">
-          <div class="feat-glow" aria-hidden="true"></div>
-
-          <div class="feat-copy">
-            <div class="feat-top">
-              <span class="feat-badge" id="feat-badge"></span>
-              <span class="feat-status" id="feat-status"><i></i><span></span></span>
-            </div>
-            <div class="feat-title-row">
-              <img class="feat-icon" id="feat-icon" alt="" hidden>
-              <div>
-                <h2 class="feat-title" id="feat-title"></h2>
-                <p class="feat-genre" id="feat-genre"></p>
-              </div>
-            </div>
-            <p class="feat-tagline" id="feat-tagline"></p>
-            <p class="feat-desc" id="feat-desc"></p>
-            <ul class="feat-points" id="feat-points"></ul>
-            <div class="feat-actions">
-              <a class="btn" id="feat-btn" href="#contact"></a>
-            </div>
-            <div class="feat-next" id="feat-next" hidden>
-              <span class="feat-next-label">Also coming</span>
-              <div class="feat-next-chips" id="feat-next-chips"></div>
-            </div>
-          </div>
-
-          <div class="feat-stage">
-            <div class="phone" id="feat-phone">
-              <div class="phone-screen" id="feat-screens"></div>
-              <div class="phone-notch"></div>
-            </div>
-            <div class="feat-dots" id="feat-dots"></div>
-          </div>
+      <div class="wrap feat">
+        <div class="feat-copy reveal">
+          <p class="feat-status" id="feat-status"><i></i><span></span></p>
+          <h2 class="feat-title" id="feat-title"></h2>
+          <p class="feat-tagline" id="feat-tagline"></p>
+          <p class="feat-desc" id="feat-desc"></p>
+          <a class="feat-btn" id="feat-btn" href="#contact"><span></span><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          <p class="feat-next" id="feat-next" hidden></p>
         </div>
+        <figure class="feat-media reveal">
+          <div class="feat-frame" id="feat-screens"></div>
+          <div class="feat-progress" id="feat-dots"></div>
+        </figure>
       </div>
     </section>
 

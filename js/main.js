@@ -104,7 +104,7 @@
     requestAnimationFrame(spin);
   }
 
-  /* ---------- featured (reads /featured/feature.txt) ---------- */
+  /* ---------- featured (reads featured/feature.js) ---------- */
   function parseFeature(txt) {
     const data = { point: [] };
     txt.split(/\r?\n/).forEach((line) => {
@@ -140,18 +140,14 @@
       sec.hidden = false;
       if (f.accent) sec.style.setProperty('--accent', f.accent);
 
-      $('#feat-badge').textContent = f.badge || '';
       const st = $('#feat-status');
       if (f.status) st.querySelector('span').textContent = f.status; else st.hidden = true;
       $('#feat-title').textContent = f.title;
-      $('#feat-genre').textContent = f.genre || '';
       $('#feat-tagline').textContent = f.tagline || '';
       $('#feat-desc').textContent = f.description || '';
-      $('#feat-points').innerHTML = f.point.map((p) => `<li>${esc(p)}</li>`).join('');
-      if (f.icon) { const ic = $('#feat-icon'); ic.src = asset(f.icon); ic.alt = f.title + ' icon'; ic.hidden = false; ic.onerror = () => { ic.hidden = true; }; }
 
       const btn = $('#feat-btn');
-      btn.textContent = f.button || (f.link ? 'Play now' : 'Get notified');
+      btn.querySelector('span').textContent = f.button || (f.link ? 'Play now' : 'Get notified');
       if (f.link) { btn.href = f.link; btn.target = '_blank'; btn.rel = 'noopener'; }
       else {
         btn.href = '#contact';
@@ -164,43 +160,38 @@
 
       const next = list(f.next);
       if (next.length) {
-        $('#feat-next').hidden = false;
-        $('#feat-next-chips').innerHTML = next.map((x) => `<span>${esc(x)}</span>`).join('');
+        const nx = $('#feat-next');
+        nx.hidden = false;
+        nx.innerHTML = 'Also coming: ' + next.map((x) => `<b>${esc(x)}</b>`).join(' · ');
       }
 
-      // phone screens
-      const screens = $('#feat-screens'), dots = $('#feat-dots');
+      // screenshots: slow crossfade with thin progress bars
+      const screens = $('#feat-screens'), bars = $('#feat-dots');
       const imgs = list(f.images);
+      const SLIDE = 4000;
       if (!imgs.length) {
-        screens.innerHTML = `<div class="soon"><div><div class="soon-ring"></div><p class="soon-title">${esc(f.title)}</p><p class="soon-sub">${esc(f.status || 'Coming soon')}</p></div></div>`;
+        screens.innerHTML = `<div class="feat-empty">${esc(f.title)}</div>`;
       } else {
         screens.innerHTML = imgs.map((p, i) => /\.(mp4|webm)$/i.test(p)
           ? `<video src="${esc(asset(p))}" muted loop playsinline autoplay preload="metadata"${i ? '' : ' class="on"'}></video>`
           : `<img src="${esc(asset(p))}" alt="${esc(f.title)} screenshot ${i + 1}"${i ? ' loading="lazy"' : ' class="on"'}>`).join('');
         if (imgs.length > 1) {
-          dots.innerHTML = imgs.map((_, i) => `<button type="button" aria-label="Screenshot ${i + 1}"${i ? '' : ' class="on"'}></button>`).join('');
-          const slides = [...screens.children], ds = [...dots.children];
+          bars.style.setProperty('--slide', SLIDE + 'ms');
+          bars.innerHTML = imgs.map((_, i) => `<button type="button" aria-label="Screenshot ${i + 1}"><i></i></button>`).join('');
+          const slides = [...screens.children], bs = [...bars.children];
           let cur = 0, timer;
           const go = (i) => {
-            slides[cur].classList.remove('on'); ds[cur].classList.remove('on');
+            slides[cur].classList.remove('on');
             cur = (i + slides.length) % slides.length;
-            slides[cur].classList.add('on'); ds[cur].classList.add('on');
+            slides[cur].classList.add('on');
+            bs.forEach((b, k) => { b.classList.remove('on'); b.classList.toggle('done', k < cur); });
+            void bs[cur].offsetWidth;                       // restart the fill animation
+            if (!reduce) bs[cur].classList.add('on'); else bs[cur].classList.add('done');
           };
-          const auto = () => { clearInterval(timer); if (!reduce) timer = setInterval(() => go(cur + 1), 3200); };
-          ds.forEach((d, i) => d.addEventListener('click', () => { go(i); auto(); }));
-          auto();
+          const auto = () => { clearInterval(timer); if (!reduce) timer = setInterval(() => go(cur + 1), SLIDE); };
+          bs.forEach((b, i) => b.addEventListener('click', () => { go(i); auto(); }));
+          go(0); auto();
         }
-      }
-
-      // phone tilts toward the mouse
-      const card = $('#feat-card'), phone = $('#feat-phone');
-      if (!reduce && window.matchMedia('(hover: hover)').matches) {
-        card.addEventListener('pointermove', (e) => {
-          const r = card.getBoundingClientRect();
-          const x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
-          phone.style.transform = `rotateY(${(-14 + x * 22).toFixed(1)}deg) rotateX(${(4 - y * 14).toFixed(1)}deg)`;
-        });
-        card.addEventListener('pointerleave', () => { phone.style.transform = ''; });
       }
       observeReveals();
     })
