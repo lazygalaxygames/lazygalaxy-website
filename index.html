@@ -1,565 +1,176 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lazy Galaxy - Game Development Company</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0d0d0d;
-            overflow-x: hidden;
-        }
-
-        /* Hide cursor only in hero section */
-        #home {
-            cursor: none;
-        }
-
-        .scroll-to-top {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            z-index: 50;
-            opacity: 0;
-            transition: opacity 0.3s ease-in-out;
-            cursor: pointer;
-        }
-
-        .scroll-to-top.show {
-            opacity: 1;
-        }
-
-        .portfolio-item:hover .overlay {
-            opacity: 1;
-        }
-
-        /* Style for the particles canvas */
-        #particles-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-
-        /* Hero content container to be on top of the canvas */
-        .hero-content {
-            z-index: 2;
-            position: relative;
-        }
-        
-        /* Fade in and slide up animation for sections on scroll */
-        .fade-in-up-on-scroll {
-            opacity: 0;
-            transform: translateY(50px);
-            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-        }
-
-        .fade-in-up-on-scroll.is-visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Mouse trail dots */
-        .trail-dot {
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            background-color: #0ff;
-            border-radius: 50%;
-            pointer-events: none;
-            opacity: 0;
-            transform: scale(0);
-            box-shadow: 0 0 8px rgba(0, 255, 255, 0.8);
-            animation: fadeOut 0.5s ease-out forwards;
-        }
-
-        @keyframes fadeOut {
-            from {
-                opacity: 1;
-                transform: scale(1);
-            }
-            to {
-                opacity: 0;
-                transform: scale(0);
-            }
-        }
-        
-        .contact-input:focus {
-            box-shadow: 0 0 8px #0ff;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lazy Galaxy — Indie game studio</title>
+  <meta name="description" content="Lazy Galaxy is an indie studio crafting games you'll want to come back to. 20 games on Google Play, PvP on the way, PC next.">
+  <meta property="og:title" content="Lazy Galaxy — Indie game studio">
+  <meta property="og:description" content="Indie studio crafting games you'll want to come back to.">
+  <meta name="theme-color" content="#07051a">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%23ff4fd8'/><stop offset='1' stop-color='%238b5cff'/></linearGradient></defs><circle cx='32' cy='32' r='14' fill='url(%23g)'/><ellipse cx='32' cy='32' rx='29' ry='9' fill='none' stroke='%233ee8ff' stroke-width='4' transform='rotate(-25 32 32)'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
 </head>
+<body>
 
-<body class="bg-gray-950 text-white leading-relaxed">
+  <!-- Full-page galaxy background + cursor effects -->
+  <canvas id="galaxy" aria-hidden="true"></canvas>
+  <div id="cursor" aria-hidden="true"><span class="cursor-dot"></span><span class="cursor-ring"></span><span class="cursor-mass"></span></div>
 
-    <!-- Header and Navigation -->
-    <header id="main-header" class="fixed top-0 left-0 right-0 z-50 bg-black/50 backdrop-blur-md p-4 transition-all duration-300">
-        <nav class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold tracking-widest uppercase">Lazy Galaxy</h1>
-            <div class="space-x-8 hidden sm:flex">
-                <a href="#about" class="hover:text-cyan-400 transition duration-300">About</a>
-                <a href="#portfolio" class="hover:text-cyan-400 transition duration-300">Portfolio</a>
-                <a href="#contact" class="hover:text-cyan-400 transition duration-300">Contact</a>
-            </div>
-        </nav>
-    </header>
+  <!-- ============ NAV ============ -->
+  <header class="nav" id="nav">
+    <a href="#top" class="brand" aria-label="Lazy Galaxy home">
+      <span class="brand-lazy">Lazy</span><span class="brand-galaxy">Galaxy</span>
+    </a>
+    <nav class="nav-links" aria-label="Main">
+      <a href="#featured" data-featured-link>Featured</a>
+      <a href="#games">Games</a>
+      <a href="#studio">Studio</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <a class="btn btn-small" href="https://play.google.com/store/apps/developer?id=Lazy+Galaxy" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M4 2.6v18.8c0 .5.5.8 1 .6l16-9.4a.7.7 0 0 0 0-1.2L5 2c-.5-.2-1 .1-1 .6z"/></svg>
+      Google Play
+    </a>
+  </header>
 
-    <!-- Home Section (Hero) -->
-    <section id="home" class="min-h-screen relative flex items-center justify-center p-8 overflow-hidden">
-        <canvas id="particles-canvas"></canvas>
-        <div class="hero-content text-center">
-            <h2 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-4 animate-in fade-in-up duration-1000">
-                Welcome to LAZY GALAXY
-            </h2>
-            <p class="text-xl md:text-2xl text-gray-400 max-w-2xl mx-auto animate-in fade-in-up duration-1000 delay-300">
-                Crafting worlds, building games, and exploring the cosmos.
-            </p>
+  <main id="top">
+
+    <!-- ============ HERO ============ -->
+    <section class="hero" id="hero">
+      <div class="orbit" id="orbit" aria-hidden="true"></div>
+      <div class="hero-inner">
+        <p class="eyebrow reveal">Independent game studio<span class="wide"> · Solo-built</span></p>
+        <h1 class="hero-title reveal" aria-label="Lazy Galaxy">
+          <span class="ht-line ht-lazy">Lazy</span>
+          <span class="ht-line ht-galaxy">Galaxy</span>
+        </h1>
+        <p class="hero-sub reveal">Indie studio crafting games you'll&nbsp;want to come back&nbsp;to.</p>
+        <div class="hero-cta reveal">
+          <a class="btn" href="#games">Explore games</a>
         </div>
+      </div>
+      <p class="hero-hint" aria-hidden="true">
+        <span class="hint-fine">Click anywhere · <b>hold</b> to make a black hole</span>
+        <span class="hint-touch">Tap the stars</span>
+      </p>
+      <a href="#featured" class="scroll-cue" aria-label="Scroll down"><span></span></a>
     </section>
 
-    <!-- Main content container with padding -->
-    <main class="container mx-auto px-4 sm:px-8 py-16 space-y-24">
+    <!-- ============ FEATURED (driven by /featured/feature.txt) ============ -->
+    <section class="featured" id="featured" hidden>
+      <div class="wrap">
+        <div class="feat-card reveal" id="feat-card">
+          <div class="feat-glow" aria-hidden="true"></div>
 
-        <!-- About Section -->
-        <section id="about" class="py-16 fade-in-up-on-scroll">
-            <div class="text-center mb-12">
-                <h3 class="text-4xl font-bold text-cyan-400 mb-4">About Lazy Galaxy</h3>
-                <p class="text-lg text-gray-300 max-w-3xl mx-auto">
-                    A Studio Aiming to Create the World’s Best Game.
-                </p>
+          <div class="feat-copy">
+            <div class="feat-top">
+              <span class="feat-badge" id="feat-badge"></span>
+              <span class="feat-status" id="feat-status"><i></i><span></span></span>
             </div>
-            <div class="bg-gray-800 p-8 rounded-2xl shadow-lg">
-                <p class="text-gray-300 leading-loose">
-                    We believe great games are built with passion, creativity, and purpose. Our mission is simple — to craft a game that stands above the rest, one that players will remember for years. 
-                    Our approach to game development is simple: build experiences that feel good to play and look even better. We value gameplay depth, clean design, and moments that leave players smiling.
-                </p>
+            <div class="feat-title-row">
+              <img class="feat-icon" id="feat-icon" alt="" hidden>
+              <div>
+                <h2 class="feat-title" id="feat-title"></h2>
+                <p class="feat-genre" id="feat-genre"></p>
+              </div>
             </div>
-        </section>
+            <p class="feat-tagline" id="feat-tagline"></p>
+            <p class="feat-desc" id="feat-desc"></p>
+            <ul class="feat-points" id="feat-points"></ul>
+            <div class="feat-actions">
+              <a class="btn" id="feat-btn" href="#contact"></a>
+            </div>
+            <div class="feat-next" id="feat-next" hidden>
+              <span class="feat-next-label">Also coming</span>
+              <div class="feat-next-chips" id="feat-next-chips"></div>
+            </div>
+          </div>
 
-        <!-- Portfolio Section -->
-        <section id="portfolio" class="py-16 fade-in-up-on-scroll">
-            <div class="text-center mb-12">
-                <h3 class="text-4xl font-bold text-cyan-400 mb-4">Our Portfolio</h3>
-                <p class="text-lg text-gray-300">Explore the games we've brought to life across various platforms.</p>
+          <div class="feat-stage">
+            <div class="phone" id="feat-phone">
+              <div class="phone-screen" id="feat-screens"></div>
+              <div class="phone-notch"></div>
             </div>
+            <div class="feat-dots" id="feat-dots"></div>
+          </div>
         </div>
-        <div id="portfolio-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Game cards will be dynamically inserted here -->
+      </div>
+    </section>
+
+    <!-- ============ GAMES — vertical screenshot river ============ -->
+    <section class="games" id="games">
+      <div class="wrap section-head reveal">
+        <p class="eyebrow">The collection</p>
+        <h2 class="section-title">Every game,<br><span class="grad">one screen each.</span></h2>
+        <p class="section-sub">Hover to pause a column. Tap any screen to open it on Google&nbsp;Play.</p>
+      </div>
+      <div class="river" id="river" aria-label="All Lazy Galaxy games"></div>
+      <div class="wrap games-foot reveal">
+        <a class="btn btn-ghost" href="https://play.google.com/store/apps/developer?id=Lazy+Galaxy" target="_blank" rel="noopener">See all on Google Play →</a>
+      </div>
+    </section>
+
+    <!-- ============ STUDIO ============ -->
+    <section class="studio" id="studio">
+      <div class="wrap studio-grid">
+        <div class="studio-copy reveal">
+          <p class="eyebrow">The studio</p>
+          <h2 class="section-title">Built to make the <span class="grad">greatest game</span> the world has ever played.</h2>
+          <p>Lazy Galaxy is a one-person studio. I'm starting on mobile and building toward large-scale PC games — and every release raises the bar for the next.</p>
+          <p>Follow along for new releases, development updates and what's coming next.</p>
         </div>
-        <div class="text-center mt-10">
-            <a 
-                href="https://play.google.com/store/apps/developer?id=krg" 
-                target="_blank" 
-                class="text-cyan-400 text-lg font-semibold hover:text-cyan-300 transition duration-300 underline decoration-cyan-500 hover:decoration-cyan-300"
-            >
-                All Games →
-            </a>
-        </section>
-
-        <!-- Contact Section -->
-        <!-- Contact Section -->
-<section id="contact" class="py-24 bg-gray-950 text-white">
-  <div class="max-w-5xl mx-auto text-center px-6">
-    <h2 class="text-5xl font-extrabold text-cyan-400 mb-4 drop-shadow-[0_0_10px_rgba(34,211,238,0.4)]">
-      Get in Touch
-    </h2>
-    <p class="text-gray-400 text-lg max-w-2xl mx-auto mb-12">
-      Have a question, an idea, or just want to say hi?  
-      We’d love to hear from you — your message goes straight to our dev team.
-    </p>
-
-    <!-- Contact Form -->
-    <form id="contact-form" class="bg-white/5 backdrop-blur-md border border-cyan-500/20 hover:border-cyan-400/40 shadow-[0_0_20px_rgba(0,255,255,0.05)] rounded-2xl p-8 md:p-10 max-w-2xl mx-auto transition duration-300 space-y-6">
-      <div class="text-left">
-        <label for="name" class="block mb-2 text-sm font-semibold text-cyan-300 tracking-wide">Name</label>
-        <input type="text" id="name" name="name" required
-          class="w-full p-3 rounded-lg bg-gray-900/80 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-400 placeholder-gray-500"
-          placeholder="Enter your name" />
+        <ol class="roadmap reveal">
+          <li class="rm done">
+            <span class="rm-num">01</span>
+            <div><h3>Mobile</h3><p><b id="rm-count">20</b> games shipped on Google Play — idle, puzzle, action, strategy.</p></div>
+          </li>
+          <li class="rm now">
+            <span class="rm-num">02</span>
+            <div><h3>PvP <em>now</em></h3><p>Steam Duel, Treehouse War and Squabble Squad — the biggest games yet, in review.</p></div>
+          </li>
+          <li class="rm">
+            <span class="rm-num">03</span>
+            <div><h3>PC</h3><p>Large-scale games. The long game.</p></div>
+          </li>
+        </ol>
       </div>
+    </section>
 
-      <div class="text-left">
-        <label for="email" class="block mb-2 text-sm font-semibold text-cyan-300 tracking-wide">Email</label>
-        <input type="email" id="email" name="email" required
-          class="w-full p-3 rounded-lg bg-gray-900/80 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-400 placeholder-gray-500"
-          placeholder="you@example.com" />
+    <!-- ============ CONTACT ============ -->
+    <section class="contact" id="contact">
+      <div class="wrap contact-grid">
+        <div class="contact-copy reveal">
+          <p class="eyebrow">Say hi</p>
+          <h2 class="section-title">Got an idea, a bug,<br>or a <span class="grad">high score?</span></h2>
+          <p>Your message comes straight to me. Want to know the moment a PvP game launches? Leave your email and say so.</p>
+        </div>
+        <form id="contact-form" class="contact-form reveal" novalidate>
+          <label>Name<input type="text" id="name" name="name" required autocomplete="name" placeholder="Your name"></label>
+          <label>Email<input type="email" id="email" name="email" required autocomplete="email" placeholder="you@example.com"></label>
+          <label>Message<textarea id="message" name="message" rows="5" required placeholder="Type your message…"></textarea></label>
+          <button type="submit" class="btn btn-full">Send message</button>
+          <p id="form-message" class="form-msg" role="status" aria-live="polite"></p>
+        </form>
       </div>
+    </section>
+  </main>
 
-      <div class="text-left">
-        <label for="message" class="block mb-2 text-sm font-semibold text-cyan-300 tracking-wide">Message</label>
-        <textarea id="message" name="message" rows="5" required
-          class="w-full p-3 rounded-lg bg-gray-900/80 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-400 placeholder-gray-500"
-          placeholder="Type your message here..."></textarea>
-      </div>
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <span class="brand brand-sm"><span class="brand-lazy">Lazy</span><span class="brand-galaxy">Galaxy</span></span>
+      <span>© <span id="year">2026</span> Lazy Galaxy OPC Pvt. Ltd.</span>
+      <a href="#top">Back to top ↑</a>
+    </div>
+  </footer>
 
-      <button type="submit"
-        class="w-full py-3 px-6 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-lg shadow-[0_0_15px_rgba(0,255,255,0.4)] hover:shadow-[0_0_25px_rgba(0,255,255,0.6)] transition duration-300">
-        Send Message 🚀
-      </button>
-
-      <p id="form-message" class="hidden mt-4 text-sm"></p>
-    </form>
-  </div>
-</section>
-
-
-
-        <!-- ✅ EmailJS Integration (place this BEFORE </body>) -->
-        <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-        <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Initialize EmailJS with your Public Key
-            emailjs.init("tqj2kJS_GnTWZuSxc");
-
-            const contactForm = document.getElementById('contact-form');
-            const formMessage = document.getElementById('form-message');
-
-            contactForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-
-                formMessage.classList.remove('text-green-500', 'text-red-500', 'hidden');
-                formMessage.textContent = 'Sending...';
-
-                emailjs.send("service_l4tpgek", "template_i7e727b", {
-                    name: document.getElementById('name').value,
-                    email: document.getElementById('email').value,
-                    message: document.getElementById('message').value
-                })
-                .then(() => {
-                    formMessage.textContent = '✅ Message sent successfully!';
-                    formMessage.classList.add('text-green-500');
-                    contactForm.reset();
-                })
-                .catch((error) => {
-                    console.error('EmailJS error:', error);
-                    formMessage.textContent = '❌ Failed to send message. Please try again later.';
-                    formMessage.classList.add('text-red-500');
-                });
-            });
-        });
-        </script>
-
-
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-black/50 text-gray-400 text-center p-6 mt-16">
-        <p>&copy; 2026 Lazy Galaxy OPC Pvt. Ltd. All rights reserved.</p>
-    </footer>
-
-    <!-- Scroll to Top Button -->
-    <button id="scrollToTopBtn" class="scroll-to-top bg-cyan-500 hover:bg-cyan-600 text-white p-4 rounded-full shadow-lg transition duration-300">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-        </svg>
-    </button>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Three.js Particle System
-            let scene, camera, renderer, particles, particleCount;
-            const container = document.getElementById('home');
-            const canvas = document.getElementById('particles-canvas');
-
-            function initParticles() {
-                scene = new THREE.Scene();
-                camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-                camera.position.z = 50;
-
-                renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true });
-                renderer.setSize(container.clientWidth, container.clientHeight);
-                renderer.setPixelRatio(window.devicePixelRatio);
-
-                // Create a star field geometry
-                particleCount = 5000;
-                const geometry = new THREE.BufferGeometry();
-                const positions = new Float32Array(particleCount * 3);
-                const colors = new Float32Array(particleCount * 3);
-
-                for (let i = 0; i < particleCount * 3; i += 3) {
-                    positions[i] = (Math.random() - 0.5) * 1000; // x
-                    positions[i + 1] = (Math.random() - 0.5) * 1000; // y
-                    positions[i + 2] = (Math.random() - 0.5) * 1000; // z
-                    const colorValue = Math.random() * 0.5 + 0.5;
-                    colors[i] = colorValue;
-                    colors[i + 1] = colorValue;
-                    colors[i + 2] = colorValue;
-                }
-
-                geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-                geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-
-                const material = new THREE.PointsMaterial({
-                    size: 0.5,
-                    vertexColors: true
-                });
-
-                particles = new THREE.Points(geometry, material);
-                scene.add(particles);
-
-                window.addEventListener('resize', onWindowResize, false);
-            }
-
-            function onWindowResize() {
-                camera.aspect = container.clientWidth / container.clientHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(container.clientWidth, container.clientHeight);
-            }
-
-            function animate() {
-                requestAnimationFrame(animate);
-                particles.rotation.y += 0.0005;
-                particles.rotation.x += 0.0002;
-                camera.position.z -= 0.1; // Fly forward
-
-                // Add a small vertical oscillation for more dynamic feel
-                camera.position.y = Math.sin(Date.now() * 0.001) * 0.5;
-
-                // Reset particles to create an endless tunnel effect
-                if (camera.position.z < -200) {
-                    camera.position.z = 50;
-                }
-
-                renderer.render(scene, camera);
-            }
-
-            initParticles();
-            animate();
-
-            // Mouse trail effect
-            const heroSection = document.getElementById('home');
-                heroSection.addEventListener('mousemove', (e) => {
-                    const rect = heroSection.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-
-                    const trailDot = document.createElement('div');
-                    trailDot.className = 'trail-dot';
-                    trailDot.style.left = `${x + rect.left}px`;
-                    trailDot.style.top = `${y + rect.top}px`;
-                    document.body.appendChild(trailDot);
-
-                    setTimeout(() => {
-                        trailDot.remove();
-                    }, 500);
-                });
-
-            // Portfolio Data - Add or remove games here
-           const games = [
-                {
-                    name: "Pirate Hunter",
-                    image: "piratehunter.png",
-                    platforms: [
-                        { name: "Google Play", url: "https://play.google.com/store/apps/details?id=com.krg.piratehunter" },
-                        { name: "IOS", url: "https://apps.apple.com/us/app/pirate-hunter/id6748638908" }
-                    ]
-                },
-                {
-                    name: "Bounce Away",
-                    image: "bounceaway.png",
-                    platforms: [
-                        { name: "Google Play", url: "https://play.google.com/store/apps/details?id=com.lazygalaxy.bounceaway" },
-                    ]
-                },
-                {
-                    name: "Fortune Rock",
-                    image: "fortunerock.png",
-                    platforms: [
-                        { name: "Google Play", url: "https://play.google.com/store/apps/details?id=com.lazygalaxy.fortunerock" },
-                    ]
-                },
-                {
-                    name: "Idle Solar Defence",
-                    image: "idlesolardefence.png",
-                    platforms: [
-                        { name: "Google Play", url: "https://play.google.com/store/apps/details?id=com.krg.idlesolardefence" },
-                    ]
-                },
-                {
-                    name: "Chicken Cartel",
-                    image: "chickencartel.png",
-                    platforms: [
-                        { name: "Google Play", url: "https://play.google.com/store/apps/details?id=com.krg.chickencartel" },
-                    ]
-                },
-                {
-                    name: "Balance Cart",
-                    image: "balancecart.png",
-                    platforms: [
-                        { name: "Google Play", url: "https://play.google.com/store/apps/details?id=com.lazygalaxy.balancecart" },
-                    ]
-                },
-                {
-                    name: "Snake Hole",
-                    image: "snakehole.png",
-                    platforms: [
-                        { name: "Google Play", url: "https://play.google.com/store/apps/details?id=com.krg.snakehole" },
-                    ]
-                },
-                {
-                    name: "Elemental Fusion",
-                    image: "elementalfusion.png",
-                    platforms: [
-                        { name: "Google Play", url: "https://play.google.com/store/apps/details?id=com.krg.ElementalFusion" },
-                    ]
-                },
-                {
-                    name: "Diceful",
-                    image: "diceful.png",
-                    platforms: [
-                        { name: "Google Play", url: "https://play.google.com/store/apps/details?id=com.krg.diceful" },
-                    ]
-                },
-                {
-                    name: "AR Bowling",
-                    image: "arbowling.png",
-                    platforms: [
-                        { name: "Google Play", url: "https://play.google.com/store/apps/details?id=com.krg.ARBowling" },
-                    ]
-                },
-                {
-                    name: "Blast And Find",
-                    image: "blastandfind.png",
-                    platforms: [
-                        { name: "Google Play", url: "https://play.google.com/store/apps/details?id=com.krg.blastandfind" },
-                    ]
-                },
-                {
-                    name: "Idle Shores",
-                    image: "idleshores.png",
-                    platforms: [
-                        { name: "Google Play", url: "https://play.google.com/store/apps/details?id=com.krg.isleofarrows" },
-                    ]
-                },
-                {
-                    name: "Rinku",
-                    image: "rinku.png",
-                    platforms: [
-                        { name: "Google Play", url: "https://play.google.com/store/apps/details?id=com.krg.Rinku" },
-                    ]
-                },
-                {
-                    name: "Bounce It",
-                    image: "bounceit.png",
-                    platforms: [
-                        { name: "Google Play", url: "https://play.google.com/store/apps/details?id=com.krg.BounceIt" },
-                    ]
-                },
-                {
-                    name: "Build A Family",
-                    image: "buildafamily.png",
-                    platforms: [
-                        { name: "Google Play", url: "https://play.google.com/store/apps/details?id=com.krg.buildafamily" },
-                    ]
-                },
-                {
-                    name: "Planet Miner",
-                    image: "planetminer.png",
-                    platforms: [
-                        { name: "Google Play", url: "https://play.google.com/store/apps/details?id=com.krg.planetminer" },
-                    ]
-                }
-            ];
-
-
-            const portfolioContainer = document.getElementById('portfolio-container');
-
-            // Dynamically generate portfolio items
-            games.forEach(game => {
-                const gameCard = document.createElement('div');
-                gameCard.className = 'portfolio-item relative rounded-xl overflow-hidden shadow-xl group transition-transform duration-300 hover:scale-105';
-
-                gameCard.innerHTML = `
-                    <div class="relative group overflow-hidden rounded-xl shadow-xl">
-                        <!-- Game Image -->
-                        <img src="${game.image}" alt="${game.name}" class="w-full h-64 object-cover">
-
-                        <!-- Overlay for hover -->
-                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col justify-center items-center">
-                            <div class="flex space-x-3">
-                                ${game.platforms.map(platform => `
-                                    <a href="${platform.url}" target="_blank" class="bg-cyan-500 text-white px-3 py-1 rounded-md font-semibold hover:bg-cyan-600 transition">
-                                        ${platform.name}
-                                    </a>
-                                `).join('')}
-                            </div>
-                        </div>
-
-                        <!-- Game Name Label (always visible on top) -->
-                        <div class="absolute top-0 left-0 right-0 bg-black/60 text-center py-2">
-                            <h4 class="text-lg font-semibold text-cyan-400 tracking-wide">${game.name}</h4>
-                        </div>
-                    </div>
-                `;
-
-                portfolioContainer.appendChild(gameCard);
-            });
-
-
-            // Smooth scrolling for navigation
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    document.querySelector(this.getAttribute('href')).scrollIntoView({
-                        behavior: 'smooth'
-                    });
-                });
-            });
-
-
-            // Scroll to Top Button functionality
-            const scrollToTopBtn = document.getElementById('scrollToTopBtn');
-            window.addEventListener('scroll', () => {
-                if (window.scrollY > 300) {
-                    scrollToTopBtn.classList.add('show');
-                } else {
-                    scrollToTopBtn.classList.remove('show');
-                }
-            });
-
-            scrollToTopBtn.addEventListener('click', () => {
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
-            });
-
-            // Intersection Observer for scroll animations
-            const sectionsToAnimate = document.querySelectorAll('.fade-in-up-on-scroll');
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('is-visible');
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, {
-                threshold: 0.1
-            });
-
-            sectionsToAnimate.forEach(section => {
-                observer.observe(section);
-            });
-
-            // Header background change on scroll
-            const header = document.getElementById('main-header');
-            window.addEventListener('scroll', () => {
-                if (window.scrollY > 50) {
-                    header.classList.remove('bg-black/50');
-                    header.classList.add('bg-black');
-                } else {
-                    header.classList.remove('bg-black');
-                    header.classList.add('bg-black/50');
-                }
-            });
-        });
-    </script>
+  <script src="js/games.js"></script>
+  <script src="featured/feature.js"></script>
+  <script src="js/galaxy.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4.4.1/dist/email.min.js"></script>
+  <script src="js/main.js"></script>
 </body>
 </html>
