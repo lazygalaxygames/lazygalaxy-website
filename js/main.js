@@ -99,7 +99,8 @@
       const rx = narrow ? W * 0.47 : Math.min(W * 0.44, 640);
       const ry = narrow ? H * 0.36 : Math.min(H * 0.30, rx * 0.42);
       // keep icons from fighting the headline: fade them while they pass behind it
-      const hr = heroEl.getBoundingClientRect(), ir = innerEl.getBoundingClientRect();
+      if (!spin.rects || spin.rectsT < now - 500) { spin.rects = [heroEl.getBoundingClientRect(), innerEl.getBoundingClientRect()]; spin.rectsT = now; }
+      const [hr, ir] = spin.rects;
       const hcx = hr.left + hr.width / 2, hcy = hr.top + hr.height / 2;
       const bx0 = ir.left - hcx - 24, bx1 = ir.right - hcx + 24, by0 = ir.top - hcy - 24, by1 = ir.bottom - hcy + 24;
       const t = reduce ? 0 : (now - t0) / 1000;
@@ -117,7 +118,6 @@
         it.op = it.op == null ? it.target : it.op + (it.target - it.op) * 0.12;
         it.img.style.opacity = it.op.toFixed(3);
         it.img.style.zIndex = depth > 0 ? 3 : 0;
-        it.img.style.filter = depth < 0 ? `blur(${(-depth * 2).toFixed(1)}px)` : 'none';
       }
       if (visible && !reduce) requestAnimationFrame(spin);
     }

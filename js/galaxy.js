@@ -10,7 +10,11 @@
 (function () {
   const canvas = document.getElementById('galaxy');
   if (!canvas || !canvas.getContext) return;
-  const ctx = canvas.getContext('2d', { alpha: false });
+  const ctx = canvas.getContext('2d');
+  // the nebula is a separate, static layer moved with a CSS transform (cheap) instead of being redrawn every frame
+  const neb = document.createElement('canvas');
+  neb.id = 'nebula'; neb.setAttribute('aria-hidden', 'true');
+  canvas.parentNode.insertBefore(neb, canvas);
   const root = document.documentElement;
   const cursorEl = document.getElementById('cursor');
   const massEl = cursorEl && cursorEl.querySelector('.cursor-mass');
@@ -41,12 +45,12 @@
 
   /* ---------- setup ---------- */
   function resize() {
-    DPR = Math.min(window.devicePixelRatio || 1, 1.75);
+    DPR = 1; // stars are tiny points — full retina resolution isn't worth the cost
     W = window.innerWidth; H = window.innerHeight;
     canvas.width = Math.round(W * DPR); canvas.height = Math.round(H * DPR);
     canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
     F = Math.max(W, H) * 0.5;
-    const target = Math.round(Math.min(950, Math.max(260, (W * H) / 1700)));
+    const target = Math.round(Math.min(window.LG_LOWFX ? 320 : 620, Math.max(200, (W * H) / (window.LG_LOWFX ? 4200 : 2300))));
     while (stars.length < target) stars.push(makeStar(true));
     stars.length = target;
     buildNebula();
@@ -68,9 +72,16 @@
     s.tw = Math.random() * Math.PI * 2;
   }
 
+  const lensSprite = (() => {
+    const c = document.createElement('canvas'), R = 168; c.width = c.height = R * 2;
+    const g2 = c.getContext('2d'), g = g2.createRadialGradient(R, R, 0, R, R, R);
+    g.addColorStop(0, 'rgba(139,92,255,0.10)'); g.addColorStop(0.55, 'rgba(255,79,216,0.05)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+    g2.fillStyle = g; g2.fillRect(0, 0, R * 2, R * 2); return c;
+  })();
+
   function buildNebula() {
     const nw = Math.max(2, Math.round(W / 3)), nh = Math.max(2, Math.round(H / 3)) * 2; // twice as tall: scrolls with page
-    const off = document.createElement('canvas');
+    const off = neb;
     off.width = nw; off.height = nh;
     const n = off.getContext('2d');
     n.fillStyle = '#07051a'; n.fillRect(0, 0, nw, nh);
@@ -88,6 +99,7 @@
       n.fillStyle = g; n.fillRect(0, 0, nw, nh);
     }
     nebula = off;
+    off.style.width = (W + 40) + 'px'; off.style.height = (H * 2 + 40) + 'px';
   }
 
   /* ---------- input ---------- */
@@ -198,7 +210,8 @@
     running = !document.hidden;
     if (running) { last = performance.now(); requestAnimationFrame(frame); }
   });
-  let rT = 0;
+  let rT = 0, lowSeen = false;
+  setInterval(() => { if (window.LG_LOWFX && !lowSeen) { lowSeen = true; resize(); } }, 1000);
   window.addEventListener('resize', () => { clearTimeout(rT); rT = setTimeout(resize, 120); });
 
   /* ---------- frame ---------- */
@@ -311,13 +324,11 @@
     ctx.globalCompositeOperation = 'source-over';
     ctx.globalAlpha = 1;
 
-    // solid clear, then nebula backdrop (parallax with scroll + mouse)
-    ctx.fillStyle = '#07051a'; ctx.fillRect(0, 0, W, H);
-    if (nebula) {
+    ctx.clearRect(0, 0, W, H);
+    {
       const docH = Math.max(1, document.documentElement.scrollHeight - H);
       const prog = Math.min(1, window.scrollY / docH);
-      const extra = H; // nebula is 2x viewport tall
-      ctx.drawImage(nebula, -20 - cam.x * 30, -prog * extra - 20 - cam.y * 30, W + 40, H * 2 + 40);
+      neb.style.transform = `translate3d(${(-20 - cam.x * 30).toFixed(1)}px, ${(-prog * H - 20 - cam.y * 30).toFixed(1)}px, 0)`;
     }
 
     const cx = W / 2 - cam.x * 60, cy = H / 2 - cam.y * 60;
@@ -365,15 +376,10 @@
       s.px = x; s.py = y;
     }
 
-    // lens glow ring
+    // lens glow ring (pre-rendered)
     if (lensOn) {
       ctx.globalAlpha = 1;
-      const g = ctx.createRadialGradient(mouse.sx, mouse.sy, 0, mouse.sx, mouse.sy, LR * 1.4);
-      g.addColorStop(0, 'rgba(139,92,255,0.10)');
-      g.addColorStop(0.55, 'rgba(255,79,216,0.05)');
-      g.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = g;
-      ctx.beginPath(); ctx.arc(mouse.sx, mouse.sy, LR * 1.4, 0, 6.2832); ctx.fill();
+      ctx.drawImage(lensSprite, mouse.sx - LR * 1.4, mouse.sy - LR * 1.4);
     }
 
     // trail

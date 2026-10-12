@@ -17,7 +17,7 @@
   const GAMES = window.LG_GAMES || [];
   const GX = () => window.LG_GALAXY || { hole: { active: false, mass: 0 }, mouse: { x: -9999, y: -9999 } };
 
-  let W = 0, H = 0, DPR = 1, small = false;
+  let W = 0, H = 0, DPR = 1, small = false, LOW = false;
 
   /* ---------------- save ---------------- */
   const KEY = 'lg-galaxy-defense-v1';
@@ -495,7 +495,7 @@
 
   /* ---------------- sizing ---------------- */
   function resize() {
-    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    DPR = Math.min(window.devicePixelRatio || 1, LOW ? 1 : 1.25);
     W = window.innerWidth; H = window.innerHeight; small = W < 700;
     canvas.width = Math.round(W * DPR); canvas.height = Math.round(H * DPR);
     canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
@@ -509,12 +509,18 @@
   });
 
   /* ---------------- loop ---------------- */
-  let last = performance.now(), hudT = 0, running = true;
+  let last = performance.now(), hudT = 0, running = true, slowAcc = 0;
   document.addEventListener('visibilitychange', () => { running = !document.hidden; if (running) { last = performance.now(); requestAnimationFrame(frame); } });
 
   function frame(now) {
     if (!running) return;
-    const dt = Math.min(0.05, (now - last) / 1000 || 0.016); last = now; t += dt;
+    const raw = (now - last) / 1000 || 0.016;
+    const dt = Math.min(0.05, raw); last = now; t += dt;
+    // auto quality: if frames are slow for ~2s, switch to a lighter mode (and tell the starfield)
+    if (!LOW && !document.hidden && raw < 0.5) {
+      slowAcc = slowAcc * 0.97 + (raw > 0.03 ? 1 : 0) * 0.03;
+      if (t > 3 && slowAcc > 0.6) { LOW = true; window.LG_LOWFX = true; resize(); enemies.forEach((e) => { e.cache = null; }); }
+    }
     if (!S.off) step(dt);
     draw();
     hudT -= dt; if (hudT <= 0) { hudT = 0.12; updateHud(); }
@@ -716,7 +722,7 @@
     return { x: W / 2 + Math.cos(a) * W * 0.44, y: H / 2 + 20 + Math.sin(a) * H * 0.36 };
   }
 
-  let coinRect = { x: 0, y: 0 }, coinRectT = 0;
+  let coinRect = { x: 0, y: 0 }, coinRectT = 0, drawnEmpty = false;
   function coinTarget() {
     if (performance.now() - coinRectT > 500) {
       const r = coinBtn.getBoundingClientRect();
@@ -751,9 +757,13 @@
 
   /* ---------------- drawing ---------------- */
   function draw() {
+    if (S.off || (!enemies.length && !parts.length && !lasers.length && !comets.length && !lvl('fleet') && !lvl('drone') && frenzyT <= 0 && waveFlash <= 0)) {
+      if (!drawnEmpty) { ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, canvas.width, canvas.height); drawnEmpty = true; }
+      return;
+    }
+    drawnEmpty = false;
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     ctx.clearRect(0, 0, W, H);
-    if (S.off) return;
 
     if (frenzyT > 0) {
       const a = 0.06 + 0.04 * Math.sin(t * 10);
@@ -767,9 +777,9 @@
     for (let i = 0; i < fl * 2; i++) {
       const p = fleetPos(i, fl * 2), im = fleetImgs[i % fleetImgs.length];
       ctx.save(); ctx.translate(p.x, p.y);
-      ctx.shadowColor = 'rgba(255,79,216,.7)'; ctx.shadowBlur = 14;
-      roundRect(-15, -15, 30, 30, 8); ctx.fillStyle = '#1a1440'; ctx.fill();
-      ctx.shadowBlur = 0; ctx.clip();
+      
+      roundRect(-17, -17, 34, 34, 9); ctx.fillStyle = '#ff4fd8'; ctx.fill();
+      roundRect(-15, -15, 30, 30, 8); ctx.fillStyle = '#1a1440'; ctx.fill(); ctx.clip();
       if (im.complete && im.naturalWidth) ctx.drawImage(im, -15, -15, 30, 30);
       ctx.restore();
     }
@@ -808,7 +818,7 @@
       for (let i = 0; i < dn; i++) {
         const p = dronePos(i, dn, c), a = t * 2.2 + (i / dn) * Math.PI * 2 + Math.PI / 2;
         ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(a);
-        ctx.shadowColor = '#3ee8ff'; ctx.shadowBlur = 10;
+        
         ctx.fillStyle = '#bff8ff';
         ctx.beginPath(); ctx.moveTo(7, 0); ctx.lineTo(-5, 5); ctx.lineTo(-2, 0); ctx.lineTo(-5, -5); ctx.closePath(); ctx.fill();
         ctx.restore();
@@ -887,7 +897,7 @@
     const tilt = Math.max(-0.35, Math.min(0.35, e.vx * 0.002));
     ctx.rotate(tilt);
     ctx.scale(e.sq, 2 - e.sq);
-    ctx.shadowColor = e.col; ctx.shadowBlur = e.boss ? 30 : 16;
+    
     ctx.fillStyle = e.col; ctx.strokeStyle = 'rgba(7,5,26,.9)'; ctx.lineWidth = Math.max(2, r * 0.07);
 
     if (e.type === 'blorp') {
@@ -897,7 +907,7 @@
         const px = Math.cos(a) * r * w, py = Math.sin(a) * r * w * (a > 0 && a < Math.PI ? 0.85 : 1);
         i ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
       }
-      ctx.closePath(); ctx.fill(); ctx.shadowBlur = 0; ctx.stroke();
+      ctx.closePath(); ctx.fill();  ctx.stroke();
       shine(r);
       eye(-r * .32, -r * .15, r * .26, e); eye(r * .34, -r * .2, r * .2, e);
       ctx.strokeStyle = 'rgba(7,5,26,.9)'; ctx.lineWidth = r * .07;
@@ -905,13 +915,13 @@
       ctx.fillStyle = '#ff6b9a'; ctx.beginPath(); ctx.ellipse(r * .08, r * .5, r * .1, r * .14 + Math.sin(e.ph * 6) * r * .03, 0, 0, 6.28); ctx.fill();
     } else if (e.type === 'zib') {
       // dome + alien
-      ctx.shadowBlur = 0;
+      
       ctx.fillStyle = 'rgba(160,230,255,.35)'; ctx.beginPath(); ctx.ellipse(0, -r * .2, r * .55, r * .6, 0, Math.PI, 0); ctx.fill();
       ctx.fillStyle = '#8CF06A'; ctx.beginPath(); ctx.arc(0, -r * .3, r * .3, 0, 6.28); ctx.fill(); ctx.stroke();
       eye(0, -r * .34, r * .18, e, .55);
       ctx.strokeStyle = 'rgba(7,5,26,.9)'; ctx.beginPath(); ctx.moveTo(-r * .14, -r * .58); ctx.lineTo(-r * .22, -r * .8); ctx.moveTo(r * .14, -r * .58); ctx.lineTo(r * .22, -r * .8); ctx.stroke();
-      ctx.shadowColor = e.col; ctx.shadowBlur = e.boss ? 30 : 14; ctx.fillStyle = e.col;
-      ctx.beginPath(); ctx.ellipse(0, r * .05, r * 1.15, r * .38, 0, 0, 6.28); ctx.fill(); ctx.shadowBlur = 0; ctx.stroke();
+       ctx.fillStyle = e.col;
+      ctx.beginPath(); ctx.ellipse(0, r * .05, r * 1.15, r * .38, 0, 0, 6.28); ctx.fill();  ctx.stroke();
       ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.beginPath(); ctx.ellipse(-r * .3, -r * .05, r * .45, r * .08, 0, 0, 6.28); ctx.fill();
       for (let i = 0; i < 5; i++) {
         const on = ((t * 4 | 0) + i) % 2;
@@ -928,7 +938,7 @@
       }
       ctx.lineWidth = Math.max(2, r * .07); ctx.strokeStyle = 'rgba(7,5,26,.9)';
       ctx.fillStyle = e.col;
-      ctx.beginPath(); ctx.ellipse(0, -r * .1, r * .9, r * .75, 0, Math.PI, 0); ctx.lineTo(r * .9, r * .2); ctx.quadraticCurveTo(0, r * .45, -r * .9, r * .2); ctx.closePath(); ctx.fill(); ctx.shadowBlur = 0; ctx.stroke();
+      ctx.beginPath(); ctx.ellipse(0, -r * .1, r * .9, r * .75, 0, Math.PI, 0); ctx.lineTo(r * .9, r * .2); ctx.quadraticCurveTo(0, r * .45, -r * .9, r * .2); ctx.closePath(); ctx.fill();  ctx.stroke();
       shine(r * .9);
       eye(-r * .42, -r * .22, r * .18, e); eye(0, -r * .4, r * .22, e); eye(r * .42, -r * .22, r * .18, e);
     } else if (e.type === 'spike') {
@@ -938,12 +948,12 @@
         const a = (i / (n * 2)) * Math.PI * 2 + e.ph * 0.6, rr = i % 2 ? r * .7 : r * 1.05;
         i ? ctx.lineTo(Math.cos(a) * rr, Math.sin(a) * rr) : ctx.moveTo(Math.cos(a) * rr, Math.sin(a) * rr);
       }
-      ctx.closePath(); ctx.fill(); ctx.shadowBlur = 0; ctx.stroke();
+      ctx.closePath(); ctx.fill();  ctx.stroke();
       eye(0, -r * .05, r * .42, e, .45);
       ctx.strokeStyle = 'rgba(7,5,26,.9)'; ctx.lineWidth = r * .08;
       ctx.beginPath(); ctx.moveTo(-r * .4, -r * .55); ctx.lineTo(r * .4, -r * .48); ctx.stroke();
     } else if (e.type === 'tooth') {
-      ctx.beginPath(); ctx.arc(0, 0, r, 0, 6.28); ctx.fill(); ctx.shadowBlur = 0; ctx.stroke();
+      ctx.beginPath(); ctx.arc(0, 0, r, 0, 6.28); ctx.fill();  ctx.stroke();
       shine(r);
       const open = 0.35 + 0.15 * Math.sin(e.ph * 7);
       ctx.fillStyle = '#2a0f22'; ctx.beginPath(); ctx.ellipse(0, r * .32, r * .62, r * open, 0, 0, 6.28); ctx.fill();
@@ -969,27 +979,30 @@
   function outlined(e) {
     const size = Math.ceil(e.r * 3.4 + 24);
     const px = Math.ceil(size * DPR);
-    if (spr.width < px) { spr.width = spr.height = sil.width = sil.height = px; }
-    // 1) draw the target into the sprite canvas
-    sctx.setTransform(1, 0, 0, 1, 0, 0); sctx.clearRect(0, 0, px, px);
-    sctx.setTransform(DPR, 0, 0, DPR, size / 2 * DPR, size / 2 * DPR);
-    ctx = sctx;
-    if (e.kind === 'rock') drawRock(e); else if (e.kind === 'gold') drawGold(e); else drawAlien(e);
-    ctx = mainCtx;
-    // 2) white silhouette of it
-    lctx.setTransform(1, 0, 0, 1, 0, 0); lctx.clearRect(0, 0, px, px);
-    lctx.globalCompositeOperation = 'source-over'; lctx.drawImage(spr, 0, 0, px, px, 0, 0, px, px);
-    lctx.globalCompositeOperation = 'source-in'; lctx.fillStyle = e.kind === 'gold' ? '#fff3b0' : '#ffffff'; lctx.fillRect(0, 0, px, px);
-    lctx.globalCompositeOperation = 'source-over';
-    // 3) soft glow + crisp outline + the sprite on top
-    const x0 = e.x - size / 2, y0 = e.y - size / 2, ow = e.boss ? 4 : 3;
-    mainCtx.save();
-    mainCtx.globalAlpha = 0.35; mainCtx.filter = 'blur(6px)';
-    mainCtx.drawImage(sil, 0, 0, px, px, x0, y0, size, size);
-    mainCtx.filter = 'none'; mainCtx.globalAlpha = 1;
-    for (const [dx, dy] of OUT) mainCtx.drawImage(sil, 0, 0, px, px, x0 + dx * ow, y0 + dy * ow, size, size);
-    mainCtx.drawImage(spr, 0, 0, px, px, x0, y0, size, size);
-    mainCtx.restore();
+    e.cacheT = (e.cacheT || 0) - 1;
+    const stale = !e.cache || e.cache.width !== px || e.cacheT <= 0 || e.flash > 0 || Math.abs(e.sq - 1) > 0.02 || (e.grow != null && e.grow < 1);
+    if (stale) {
+      e.cacheT = LOW ? 4 : 2;
+      if (!e.cache || e.cache.width !== px) { e.cache = document.createElement('canvas'); e.cache.width = e.cache.height = px; e.cctx = e.cache.getContext('2d'); }
+      if (spr.width < px) { spr.width = spr.height = sil.width = sil.height = px; }
+      // 1) the target itself
+      sctx.setTransform(1, 0, 0, 1, 0, 0); sctx.clearRect(0, 0, px, px);
+      sctx.setTransform(DPR, 0, 0, DPR, size / 2 * DPR, size / 2 * DPR);
+      ctx = sctx;
+      if (e.kind === 'rock') drawRock(e); else if (e.kind === 'gold') drawGold(e); else drawAlien(e);
+      ctx = mainCtx;
+      // 2) white silhouette
+      lctx.setTransform(1, 0, 0, 1, 0, 0); lctx.clearRect(0, 0, px, px);
+      lctx.globalCompositeOperation = 'source-over'; lctx.drawImage(spr, 0, 0, px, px, 0, 0, px, px);
+      lctx.globalCompositeOperation = 'source-in'; lctx.fillStyle = e.kind === 'gold' ? '#fff3b0' : '#ffffff'; lctx.fillRect(0, 0, px, px);
+      lctx.globalCompositeOperation = 'source-over';
+      // 3) outline + sprite baked into this target's cache
+      const c = e.cctx, ow = (e.boss ? 4 : 3) * DPR;
+      c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, px, px);
+      for (const [dx, dy] of OUT) c.drawImage(sil, 0, 0, px, px, dx * ow, dy * ow, px, px);
+      c.drawImage(spr, 0, 0, px, px, 0, 0, px, px);
+    }
+    mainCtx.drawImage(e.cache, 0, 0, px, px, e.x - size / 2, e.y - size / 2, size, size);
   }
   function shine(r) { ctx.fillStyle = 'rgba(255,255,255,.28)'; ctx.beginPath(); ctx.ellipse(-r * .45, -r * .5, r * .18, r * .1, -0.6, 0, 6.28); ctx.fill(); }
   function hpBar(e) {
@@ -1025,11 +1038,11 @@
   function drawGold(e) {
     const r = e.r;
     ctx.save();
-    ctx.shadowColor = '#ffd84d'; ctx.shadowBlur = 30;
+    
     ctx.fillStyle = 'rgba(255,240,180,.5)'; ctx.beginPath(); ctx.ellipse(0, -r * .2, r * .5, r * .55, 0, Math.PI, 0); ctx.fill();
     const g = ctx.createLinearGradient(0, -r * .4, 0, r * .4); g.addColorStop(0, '#fff3b0'); g.addColorStop(1, '#e0a020');
     ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(0, r * .05, r * 1.15, r * .38, 0, 0, 6.28); ctx.fill();
-    ctx.shadowBlur = 0;
+    
     for (let i = 0; i < 6; i++) { const a = t * 3 + i; ctx.fillStyle = '#fff'; ctx.globalAlpha = .6 + .4 * Math.sin(t * 8 + i); ctx.beginPath(); ctx.arc(Math.cos(a) * r * 1.5, Math.sin(a) * r * .9, 2, 0, 6.28); ctx.fill(); }
     ctx.restore(); ctx.globalAlpha = 1;
   }
