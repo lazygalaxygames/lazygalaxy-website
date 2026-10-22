@@ -4,40 +4,71 @@ window.LG_FEATURE = `
 # ================================================================
 #  FEATURED GAME — the spotlight right under the hero
 # ================================================================
-#  1. Put screenshots for the game in this "featured" folder
-#     (portrait 9:16 works best, e.g. 1080x1920).
-#  2. Edit the lines below. Format is   key: value
-#     Never type a backtick character in the text — it ends the block.
-#  3. Commit + push.
+#  Two layouts:
+#    layout: showcase  → cinematic: background video, trailer player,
+#                        round-by-round clips, build stats, investor panel
+#    layout: simple    → title, text and a screenshot slideshow
+#                        (uses status, tagline, description, images,
+#                         button, link, accent, next)
 #
-#  Lines starting with # are ignored. Leave a value empty to hide it.
+#  Format is   key: value   ·  lines starting with # are ignored.
+#  Lines that repeat (beat, stat, moment, road, trailer) use  |  between parts.
+#  Never type a backtick character in the text — it ends the block.
+#  Media paths are relative to this "featured" folder.
 #  Set  show: no  to hide the whole section.
 # ================================================================
 
 show: yes
+layout: showcase
+nav: Detonauts
 
-# Small line above the title, e.g. "In Google Play review", "Out now"
-status: In Google Play review
+kicker: Lazy Galaxy presents · New game
+title: DETONAUTS
+tagline: Hero tactics in three-minute bursts.
+description: A 3v3 bomb-and-heroes shooter for phone and browser. Valorant-style rounds and heroes, played in Brawl Stars-sized matches.
+status: Playable today · Closed playtests Nov–Dec 2026
 
-title: Steam Duel
+# Silent looping video behind the title (a .jpg with the same name is used as its poster)
+hero_video: detonauts/hero.mp4
 
-# One short line under the title
-tagline: Build a steam-powered fort. Smash your rival's.
+# Trailers open in a player with sound:  file | button label | length
+trailer: detonauts/trailer.mp4 | Watch the trailer | 1:31
+trailer: detonauts/cinematic.mp4 | Bomb mode cinematic | 1:07
 
-# One or two sentences
-description: Hide your crew inside an iron-and-brass fort, then take turns smashing your rival's with wrecking balls, drills and rockets.
+# One round, step by step:  clip | title | text
+beats_title: Every round is a small story
+beat: detonauts/beat-buy.mp4 | Buy | Spend round cash on guns, shields and grenades. Survive and you keep your gun.
+beat: detonauts/beat-fight.mp4 | Fight | 3v3, top-down. You only see what your hero can see, and ultimates turn the fight.
+beat: detonauts/beat-plant.mp4 | Plant | Attack site A or B and get the bomb down.
+beat: detonauts/beat-defuse.mp4 | Defuse | Or stop it before it blows. First team to 5 rounds wins.
 
-# Images in this folder, comma separated, shown in order
-images: 1-smash.webp, 2-aim.webp, 3-ko.webp, 4-fort.webp, 5-crew.webp
+# The numbers (plain numbers count up when the fuse blows):  value | label
+stats_title: Built and playable today
+stat: 12 | heroes, each with an ability and an ultimate
+stat: 11 | guns, plus 3 grenades
+stat: 4 | game modes
+stat: 8 | rank tiers, Copper to Legend
+stat: 1 | month to build, by one developer
+stat: Live | online 3v3 with friends
 
-# Button. Leave link empty while the game is in review —
-# the button then scrolls to the contact form instead.
-button: Get notified at launch
-link:
+# Short looping moments:  clip | title | text
+moment: detonauts/moment-heroes.mp4 | 12 heroes | Every hero has a role, a personality and a signature gun.
+moment: detonauts/moment-ranks.mp4 | Climb the ranks | Ranked, Quick Play, Team Deathmatch and Free-for-all.
+moment: detonauts/moment-friends.mp4 | Play with friends | Share a 4-letter room code and squad up.
 
-# Colour of the small status dot (any CSS colour)
-accent: #e8b54a
+# Investor panel
+invest_title: Raising a pre-seed round
+# Optional — shown big under the title, e.g.  invest_amount: $480K pre-seed · 18 months to global launch
+invest_amount:
+invest_text: Detonauts is playable today. We're looking for investors and a publishing partner to take it from a working build to a global launch.
+invest_note: Cosmetics only. Never pay-to-win.
+invest_button: Request the pitch deck
+invest_message: Hi Krishna, I'd like to see the Detonauts pitch deck and play a round.
 
-# Quiet line at the bottom. Comma separated.
-next: Treehouse War, Squabble Squad
+# Roadmap (the first line is highlighted as "now"):  when | title | text
+road: Now · Oct 2026 | Playable | 12 heroes, 4 modes, online 3v3 with friends
+road: Nov–Dec 2026 | Playtests | Closed tests, fixes, store pages
+road: Q1 2027 | Content | Locker, Season 1 Pass, new maps, iOS and Android
+road: Q2 2027 | Soft launch | 2–3 test markets
+road: H2 2027 | Global launch | Worldwide release, live seasons, ranked events
 `;

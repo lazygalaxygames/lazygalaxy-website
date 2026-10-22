@@ -126,7 +126,8 @@
 
   /* ---------- featured (reads featured/feature.js) ---------- */
   function parseFeature(txt) {
-    const data = { point: [] };
+    const LISTS = ['point', 'beat', 'stat', 'moment', 'road', 'trailer'];
+    const data = {}; LISTS.forEach((k) => { data[k] = []; });
     txt.split(/\r?\n/).forEach((line) => {
       const l = line.trim();
       if (!l || l.startsWith('#')) return;
@@ -134,7 +135,7 @@
       if (i < 1) return;
       const key = l.slice(0, i).trim().toLowerCase();
       const val = l.slice(i + 1).trim();
-      if (key === 'point') { if (val) data.point.push(val); }
+      if (LISTS.includes(key)) { if (val) data[key].push(val); }
       else data[key] = val;
     });
     return data;
@@ -156,6 +157,20 @@
       if (typeof txt !== 'string') throw new Error('no feature');
       const f = parseFeature(txt);
       if (!f.title || /^(no|false|off|0)$/i.test(f.show || '')) return hideFeatured();
+      if (f.nav) document.querySelectorAll('.nav-links [data-featured-link]').forEach((a) => { a.textContent = f.nav; });
+
+      // cinematic showcase layout (js/showcase.js)
+      if ((f.layout || '').toLowerCase() === 'showcase' && window.LG_renderShowcase) {
+        $('#featured').hidden = true;
+        document.querySelectorAll('[data-featured-link]').forEach((a) => a.setAttribute('href', '#showcase'));
+        window.LG_renderShowcase(f, asset, (msg) => {
+          const m = $('#message');
+          if (m && !m.value) m.value = msg;
+          setTimeout(() => { const nm = $('#name'); nm && nm.focus({ preventScroll: true }); }, 700);
+        });
+        observeReveals();
+        return;
+      }
       const sec = $('#featured');
       sec.hidden = false;
       if (f.accent) sec.style.setProperty('--accent', f.accent);

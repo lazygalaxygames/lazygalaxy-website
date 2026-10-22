@@ -303,10 +303,11 @@
     <div class="hud-chip hud-wave" title="Wave progress"><span id="hud-wave">Wave 1</span><i class="hud-bar"><b id="hud-prog"></b></i></div>
     <span class="hud-chip hud-frenzy" id="hud-frenzy" hidden>FRENZY ×7</span>
     <button class="hud-chip hud-research" id="hud-research" type="button">Research</button>
-    <button class="hud-chip hud-icon" id="hud-off" type="button" title="Hide the game" aria-label="Hide the game">✕</button>`;
+    <button class="hud-chip hud-close" id="hud-off" type="button" title="Close the game so you can read the site">✕ <span>Close game</span></button>`;
   document.body.appendChild(hud);
   const playBtn = document.createElement('button');
-  playBtn.className = 'hud-play'; playBtn.type = 'button'; playBtn.innerHTML = '<span class="coin" aria-hidden="true"></span> Play the galaxy';
+  playBtn.className = 'hud-play'; playBtn.type = 'button';
+  playBtn.innerHTML = '<span class="hud-play-ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="14" height="14"><path fill="currentColor" d="M7 4.6v14.8c0 .7.8 1.2 1.4.8l11.6-7.4a.9.9 0 0 0 0-1.6L8.4 3.8C7.8 3.4 7 3.9 7 4.6z"/></svg></span> Play Galaxy Defense <span class="hud-play-sub" id="hud-play-sub"></span>';
   document.body.appendChild(playBtn);
   const bossBar = document.createElement('div');
   bossBar.className = 'boss-bar'; bossBar.hidden = true;
@@ -335,10 +336,20 @@
   function setOff(v) {
     S.off = v; save();
     root.classList.toggle('game-off', v);
-    if (v) { enemies = []; parts.length = 0; bossT = 0; bossBar.hidden = true; }
-    else { spawnT = 0.3; toast('Defend the galaxy! Click the aliens.'); }
+    if (v) { enemies = []; parts.length = 0; lasers.length = 0; comets.length = 0; bossT = 0; frenzyT = 0; bossBar.hidden = true; if (!rs.hidden) closeRS(); updatePlaySub(); }
+    else {
+      spawnT = 0.3; toast(S.kills ? `Welcome back — wave ${S.wave}. Click the aliens!` : 'Defend the galaxy! Click the aliens.');
+      if (awayGain) { const g = awayGain; awayGain = 0; setTimeout(() => toast(`⏳ While you were away: +${fmt(g)} coins`), 900); }
+    }
   }
-  root.classList.toggle('game-off', S.off);
+  function updatePlaySub() {
+    const sub = document.getElementById('hud-play-sub');
+    if (sub) sub.textContent = S.kills ? `Wave ${S.wave} · ${fmt(S.coins)} coins` : 'a tiny clicker game';
+  }
+  // the game always starts closed, so the site is calm to read; progress is kept for when you press Play
+  S.off = true;
+  root.classList.add('game-off');
+  setTimeout(updatePlaySub, 0);
 
   const ACH = {
     first: 'First contact — your first alien', boss1: 'Boss down', w25: 'Deep space — wave 25', mil: 'Space millionaire',
@@ -483,14 +494,14 @@
   }
 
   /* ---------------- offline earnings ---------------- */
-  let earnedWindow = 0, cpsT = 0;
+  let earnedWindow = 0, cpsT = 0, awayGain = 0;
   (function offline() {
     const tw = lvl('timewarp');
-    if (!tw || !S.cps || S.off) return;
+    if (!tw || !S.cps) return;
     const away = Math.min(8 * 3600, (Date.now() - S.seen) / 1000);
     if (away < 60) return;
     const gain = Math.floor(S.cps * away * 0.1 * tw);
-    if (gain > 0) { earn(gain); setTimeout(() => toast(`⏳ While you were away: +${fmt(gain)} coins`), 1200); }
+    if (gain > 0) { earn(gain); awayGain = gain; }
   })();
 
   /* ---------------- sizing ---------------- */
